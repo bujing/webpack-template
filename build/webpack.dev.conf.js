@@ -1,12 +1,12 @@
 process.env.NODE_ENV = 'development'
 
-const { merge } = require('webpack-merge')
 const path = require('path')
+const { merge } = require('webpack-merge')
 const config = require('./webpack.base.conf')
 
 module.exports = merge(config, {
   devServer: {
-    contentBase: path.join(__dirname, 'src'),
+    contentBase: path.join(__dirname, '../src'),
     host: '0.0.0.0',
     hot: true,
     port: 2020

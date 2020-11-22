@@ -1,4 +1,3 @@
-const webpack = require('webpack')
 const path = require('path')
 const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -9,7 +8,7 @@ const ESLintPlugin = require('eslint-webpack-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const webpackConfig = {
+const config = {
   entry: {
     index: './src/app.js'
   },
@@ -47,6 +46,7 @@ const webpackConfig = {
           {
             loader: 'sass-loader',
             options: {
+              implementation: require('sass'),
               sourceMap: isDev
             }
           }
@@ -75,13 +75,12 @@ const webpackConfig = {
     }
   },
   output: {
-    filename: isDev ? 'js/[name].js' : 'js/[name].[chunkhash].js',
+    filename: isDev ? '[name].js' : 'js/[name].[contenthash].js',
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/' // 注入 HTML 中的文件路径以此项配置开头
   },
   plugins: [
     new HtmlWebpackPlugin({
-      inject: true,
       template: path.resolve(__dirname, '../src/index.html'),
       chunks: ['manifest', 'app', 'index']
     }),
@@ -89,12 +88,12 @@ const webpackConfig = {
       fix: true
     }),
     new MiniCssExtractPlugin({
-      filename: isDev ? 'css/[name].css' : 'css/[name].[contenthash].css'
+      filename: isDev ? '[name].css' : 'css/[name].[contenthash].css'
     }),
     new StylelintWebpackPlugin({
       context: 'src',
-      configFile: path.resolve(__dirname,'../stylelint.config.js'),
-      files: 'css/**/*.scss',
+      configFile: path.resolve(__dirname, '../stylelint.config.js'),
+      files: '**/*.scss',
       failOnError: false,
       quiet: true,
       fix: true
@@ -125,8 +124,8 @@ glob.sync(path.resolve(__dirname, '../src/modules/**/*.js')).forEach(entry => {
 })
 
 entries.map(({ dirname, entry, key, name }) => {
-  webpackConfig.entry[key] = path.resolve(__dirname, entry)
-  webpackConfig.plugins.push(new HtmlWebpackPlugin({
+  config.entry[key] = path.resolve(__dirname, entry)
+  config.plugins.push(new HtmlWebpackPlugin({
     filename: path.resolve(__dirname, `../dist${dirname}/${name}.html`),
     inject: true,
     template: path.resolve(__dirname, `../src/modules${dirname}/${name}.html`),
@@ -134,6 +133,6 @@ entries.map(({ dirname, entry, key, name }) => {
   }))
 })
 
-webpackConfig.plugins.push(new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/]))
+config.plugins.push(new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/]))
 
-module.exports = webpackConfig
+module.exports = config
