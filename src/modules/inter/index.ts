@@ -1,5 +1,7 @@
 import "@/css/index.scss";
+import "@/css/inter.scss";
 import Logo from "@/images/inter.png";
+
 (function () {
   const doc = document;
   const loading = `

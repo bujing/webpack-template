@@ -1,0 +1,35 @@
+$camp-color: (
+  "wei": darkgreen,
+  "shu": darkorchid,
+  "wu": darkorange,
+  "qun": darkcyan,
+);
+
+.box {
+  height: 50px;
+  margin: 200px auto;
+  position: relative;
+  text-align: center;
+  transform: rotateX(0deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  width: 50px;
+}
+
+.item {
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 5px 2px #333;
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  position: absolute;
+  transform: rotateX(0deg) rotateY(0deg) translateZ(150px);
+  width: 42px;
+
+  @each $camp, $value in $camp-color {
+    &.#{$camp} {
+      box-shadow: 0 0 5px 2px $value;
+    }
+  }
+}

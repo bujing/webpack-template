@@ -104,13 +104,13 @@ const config = {
 
 const entries = [];
 glob
-  .sync(path.resolve(__dirname, "../src/modules/**/*.js"))
+  .sync(path.resolve(__dirname, "../src/modules/**/*.ts"))
   .forEach((entry) => {
     let dirname = path.dirname(entry);
     const exec = /.*modules(.*)/g.exec(dirname);
     dirname = exec ? exec[1] : "";
 
-    const name = path.basename(entry, ".js");
+    const name = path.basename(entry, ".ts");
     const key = dirname.substr(1) + "/" + name;
 
     entries.push({
