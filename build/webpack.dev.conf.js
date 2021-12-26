@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { merge } = require("webpack-merge");
+
 process.env.NODE_ENV = "development";
 
-const { merge } = require("webpack-merge");
 const config = require("./webpack.base.conf");
 
 module.exports = merge(config, {

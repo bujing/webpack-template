@@ -102,16 +102,16 @@ const config = {
   },
 };
 
-let entries = [];
+const entries = [];
 glob
   .sync(path.resolve(__dirname, "../src/modules/**/*.js"))
   .forEach((entry) => {
     let dirname = path.dirname(entry);
-    let exec = /.*modules(.*)/g.exec(dirname);
+    const exec = /.*modules(.*)/g.exec(dirname);
     dirname = exec ? exec[1] : "";
 
-    let name = path.basename(entry, ".js");
-    let key = dirname.substr(1) + "/" + name;
+    const name = path.basename(entry, ".js");
+    const key = dirname.substr(1) + "/" + name;
 
     entries.push({
       dirname,
