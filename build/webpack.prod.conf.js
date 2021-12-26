@@ -1,5 +1,4 @@
-process.env.NODE_ENV = 'production'
+/* eslint-disable @typescript-eslint/no-var-requires */
+process.env.NODE_ENV = "production";
 
-const config = require('./webpack.base.conf')
-
-module.exports = config
+module.exports = require("./webpack.base.conf");

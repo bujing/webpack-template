@@ -1,138 +1,141 @@
-const path = require('path')
-const glob = require('glob')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineChunkHtmlPlugin = require('inline-chunk-html-plugin')
-const StylelintWebpackPlugin = require('stylelint-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const ESLintPlugin = require('eslint-webpack-plugin')
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require("path");
+const glob = require("glob");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const StylelintWebpackPlugin = require("stylelint-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === "development";
 
 const config = {
   entry: {
-    index: './src/app.js'
+    index: "./src/app.ts",
   },
   mode: process.env.NODE_ENV,
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
+        loader: "babel-loader",
       },
       {
         test: /\.scss$/,
         use: [
+          MiniCssExtractPlugin.loader,
           {
-            loader: MiniCssExtractPlugin.loader
-          },
-          {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
-              sourceMap: isDev
-            }
+              sourceMap: isDev,
+            },
           },
           {
-            loader: 'postcss-loader',
+            loader: "postcss-loader",
             options: {
               postcssOptions: {
-                plugins: [
-                  'postcss-preset-env'
-                ]
+                plugins: ["postcss-preset-env"],
               },
-              sourceMap: isDev
-            }
+              sourceMap: isDev,
+            },
           },
           {
-            loader: 'sass-loader',
+            loader: "sass-loader",
             options: {
-              implementation: require('sass'),
-              sourceMap: isDev
-            }
-          }
-        ]
+              implementation: require("sass"),
+              sourceMap: isDev,
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf)$/,
-        loader: 'url-loader',
-        options: {
-          context: path.resolve(__dirname, '../src'),
-          limit: 10000,
-          name: '[path][name].[hash:20].[ext]'
-        }
-      }
-    ]
+        type: "asset",
+        parser: {
+          dataUrlCondition: {
+            maxSize: 100 * 1024, // 100kb
+          },
+        },
+      },
+    ],
   },
   optimization: {
     splitChunks: {
       minSize: 0,
-      chunks: 'all',
-      name: 'app'
+      chunks: "all",
+      name: "app",
     },
 
     runtimeChunk: {
-      name: 'manifest'
-    }
+      name: "manifest",
+    },
   },
   output: {
-    filename: isDev ? '[name].js' : 'js/[name].[contenthash].js',
-    path: path.resolve(__dirname, '../dist'),
-    publicPath: '/' // 注入 HTML 中的文件路径以此项配置开头
+    filename: isDev ? "[name].js" : "js/[name].[contenthash].js",
+    path: path.resolve(__dirname, "../dist"),
+    publicPath: "/", // 注入 HTML 中的文件路径以此项配置开头
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/index.html'),
-      chunks: ['manifest', 'app', 'index']
-    }),
-    new ESLintPlugin({
-      fix: true
+      template: path.resolve(__dirname, "../src/index.html"),
+      chunks: ["manifest", "app", "index"],
     }),
     new MiniCssExtractPlugin({
-      filename: isDev ? '[name].css' : 'css/[name].[contenthash].css'
+      filename: isDev ? "[name].css" : "css/[name].[contenthash].css",
     }),
     new StylelintWebpackPlugin({
-      context: 'src',
-      configFile: path.resolve(__dirname, '../stylelint.config.js'),
-      files: '**/*.scss',
-      failOnError: false,
-      quiet: true,
-      fix: true
-    })
+      fix: true,
+    }),
+    new ForkTsCheckerWebpackPlugin({
+      eslint: {
+        files: "./src/**/*.{ts,tsx,js,jsx}",
+      },
+    }),
+    new WebpackManifestPlugin(),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../src')
-    }
-  }
-}
+      "@": path.resolve(__dirname, "../src"),
+    },
+    extensions: [".ts", ".tsx", ".js", ".json"],
+  },
+};
 
-let entries = []
-glob.sync(path.resolve(__dirname, '../src/modules/**/*.js')).forEach(entry => {
-  let dirname = path.dirname(entry)
-  let exec = /.*modules(.*)/g.exec(dirname)
-  dirname = exec ? exec[1] : ''
+let entries = [];
+glob
+  .sync(path.resolve(__dirname, "../src/modules/**/*.js"))
+  .forEach((entry) => {
+    let dirname = path.dirname(entry);
+    let exec = /.*modules(.*)/g.exec(dirname);
+    dirname = exec ? exec[1] : "";
 
-  let name = path.basename(entry, '.js')
-  let key = dirname.substr(1) + '/' + name
+    let name = path.basename(entry, ".js");
+    let key = dirname.substr(1) + "/" + name;
 
-  entries.push({
-    dirname,
-    entry,
-    key,
-    name
-  })
-})
+    entries.push({
+      dirname,
+      entry,
+      key,
+      name,
+    });
+  });
 
 entries.map(({ dirname, entry, key, name }) => {
-  config.entry[key] = path.resolve(__dirname, entry)
-  config.plugins.push(new HtmlWebpackPlugin({
-    filename: path.resolve(__dirname, `../dist${dirname}/${name}.html`),
-    inject: true,
-    template: path.resolve(__dirname, `../src/modules${dirname}/${name}.html`),
-    chunks: ['manifest', 'app', key]
-  }))
-})
+  config.entry[key] = path.resolve(__dirname, entry);
+  config.plugins.push(
+    new HtmlWebpackPlugin({
+      filename: path.resolve(__dirname, `../dist${dirname}/${name}.html`),
+      inject: true,
+      template: path.resolve(
+        __dirname,
+        `../src/modules${dirname}/${name}.html`
+      ),
+      chunks: ["manifest", "app", key],
+    })
+  );
+});
 
-config.plugins.push(new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime/]))
+config.plugins.push(new WebpackManifestPlugin());
 
-module.exports = config
+module.exports = config;

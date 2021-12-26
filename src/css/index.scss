@@ -10,7 +10,7 @@
 }
 
 .loading {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgb(0 0 0 / 60%);
   height: 100%;
   left: 0;
   position: fixed;
@@ -30,23 +30,23 @@
   }
 
   &-f {
-    background-image: url(../images/loader/football.svg);
-    animation: rotatingY 2s linear infinite;
+    background-image: url("../images/loader/football.svg");
+    animation: rotating-y 2s linear infinite;
   }
 
   &-c {
-    background-image: url(../images/loader/club.svg);
+    background-image: url("../images/loader/club.svg");
     animation: rotating 2s linear infinite;
   }
 
   &-i {
-    background-image: url(../images/loader/inter.svg);
-    animation: rotatingY 2s linear infinite;
+    background-image: url("../images/loader/inter.svg");
+    animation: rotating-y 2s linear infinite;
   }
 
   &-m {
-    background-image: url(../images/loader/milano.svg);
-    animation: rotatingY 2s linear infinite;
+    background-image: url("../images/loader/milano.svg");
+    animation: rotating-y 2s linear infinite;
   }
 }
 
@@ -60,7 +60,7 @@
   }
 }
 
-@keyframes rotatingY {
+@keyframes rotating-y {
   from {
     transform: rotateY(0);
   }
