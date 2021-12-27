@@ -30,6 +30,7 @@ if (btn) {
 
 const img = document.createElement("img");
 img.src = inter;
+img.style.maxWidth = "100%";
 document.body.appendChild(img);
 
 export default c;

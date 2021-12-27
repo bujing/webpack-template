@@ -1,5 +1,5 @@
 import "@/css/index.scss";
-import "@/css/sanguo.scss";
+import styles from "@/css/sanguo.module.scss";
 
 const list = [
   {
@@ -556,11 +556,13 @@ const div = document.createElement("div");
 document.body.appendChild(div);
 
 div.className = "wrap";
-let content = '<div class="box">';
+let content = '<div id="box" class="' + styles.box + '">';
 for (let i = 0; i < list.length; i++) {
   content +=
-    '<div class="item ' +
-    list[i].camp.toLowerCase() +
+    '<div class="' +
+    styles.item +
+    " " +
+    styles[list[i].camp.toLowerCase()] +
     '" style="transform: rotateX(' +
     rotates[i][0] +
     "deg) rotateY(" +
@@ -574,7 +576,7 @@ div.innerHTML = content;
 
 const deg = { x: 0, y: 0 };
 const step = { x: 1, y: 1 };
-const box = <HTMLElement>document.querySelector(".box");
+const box = <HTMLElement>document.querySelector("#box");
 if (box) {
   window.setInterval(() => {
     deg.x += step.x;
